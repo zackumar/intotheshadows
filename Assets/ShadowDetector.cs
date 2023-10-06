@@ -7,52 +7,37 @@ using UnityEngine.Rendering.Universal;
 
 public class ShadowDetector : MonoBehaviour
 {
-    // Start is called before the first frame update
 
     public List<Light2D> lights;
     public LayerMask layerToIgnore;
-
     public Collider2D shadowCollider;
-
     public int points = 10;
-
     public bool inShadow = true;
-
-    uint shapeHash;
-    private PhysicsShapeGroup2D physicsShapeGroup2D = new PhysicsShapeGroup2D();
-    private List<PhysicsShape2D> shapes = new List<PhysicsShape2D>();
-
     public UnityEvent onEvent;
     public UnityEvent offEvent;
 
-    private List<Vector2> vertices = new List<Vector2>();
 
-    void Start()
+    private PhysicsShapeGroup2D physicsShapeGroup2D = new PhysicsShapeGroup2D();
+    private List<Vector2> vertices = new List<Vector2>();
+    private uint shapeHash;
+
+
+
+    private void Start()
     {
-        Light2D[] allLights = FindObjectsByType<Light2D>(FindObjectsSortMode.None);
-        foreach (Light2D light in allLights)
-        {
-            if (light.shadowsEnabled)
-            {
-                lights.Add(light);
-            }
-        }
+        lights.AddRange(FindObjectsByType<Light2D>(FindObjectsSortMode.None));
+        lights.RemoveAll(light => !light.shadowsEnabled);
     }
 
     private bool prevState = false;
 
-    void Update()
+    private void Update()
     {
-
-        // if (transform.hasChanged || shadowCollider.GetShapeHash() != shapeHash)
-        // {
-        // if (transform.hasChanged)
-        // transform.hasChanged = false;
-        // if (shadowCollider.GetShapeHash() != shapeHash)
+        // if (shapeHash != shadowCollider.GetShapeHash())
         // {
         shapeHash = shadowCollider.GetShapeHash();
         shadowCollider.GetShapes(physicsShapeGroup2D);
-        // };
+        // }
 
         inShadow = false;
 
@@ -61,29 +46,32 @@ public class ShadowDetector : MonoBehaviour
             if (InShadow(light))
             {
                 inShadow = true;
+                break;
             }
         }
 
-        if (inShadow && !prevState)
+        if (inShadow != prevState)
         {
-            Debug.Log("In shadow");
-            onEvent.Invoke();
-        }
-        else if (!inShadow && prevState)
-        {
-            Debug.Log("Out shadow");
-            offEvent.Invoke();
+            if (inShadow)
+            {
+                onEvent.Invoke();
+                Debug.Log("In shadow");
+            }
+            else
+            {
+                offEvent.Invoke();
+                Debug.Log("Out shadow");
+            }
         }
 
         prevState = inShadow;
     }
 
-    public List<Vector3> castPoints = new List<Vector3>();
-    public List<Vector3[]> lines = new List<Vector3[]>();
+    private List<Vector3> castPoints = new List<Vector3>();
+    private List<Vector3[]> lines = new List<Vector3[]>();
 
     bool InShadow(Light2D light)
     {
-
         castPoints.Clear();
         lines.Clear();
         for (int i = 0; i < physicsShapeGroup2D.shapeCount; i++)
@@ -148,67 +136,7 @@ public class ShadowDetector : MonoBehaviour
             Gizmos.DrawSphere(p, 0.02f);
         }
 
-        // Gizmos.color = Color.gray;
-        // foreach (Light2D light in lights)
-        // {
-        //     foreach (Vector3 v in lig)
-        //     {
-
-        //         Gizmos.DrawSphere(v, 0.02f);
-        //     }
-        // }
 
     }
 
-    // void OnDrawGizmos()
-    // {
-
-    //     Gizmos.color = Color.white;
-    //     if (shadowCollider.GetShapeHash() != shapeHash)
-    //     {
-    //         shadowCollider.GetShapes(physicsShapeGroup2D);
-    //         for (int i = 0; i < physicsShapeGroup2D.shapeCount; i++)
-    //         {
-    //             physicsShapeGroup2D.GetShapeVertices(i, vertices);
-    //             PhysicsShape2D shape = physicsShapeGroup2D.GetShape(i);
-
-    //             foreach (Light2D light in lights)
-    //             {
-    //                 Vector3 lightPosition = light.transform.position;
-
-    //                 foreach (Vector2 vertex in vertices)
-    //                 {
-    //                     Vector3 newVertex = physicsShapeGroup2D.localToWorldMatrix.MultiplyPoint(vertex);
-
-    //                     Vector3 direction = (newVertex - lightPosition).normalized;
-    //                     Vector3 perpendicular = new Vector3(-direction.y, direction.x, transform.position.z);
-
-
-    //                     Gizmos.DrawRay(lightPosition, direction);
-    //                     Gizmos.color = Color.red;
-    //                     Gizmos.DrawRay(newVertex, perpendicular);
-
-    //                     for (int j = 0; j < points; j++)
-    //                     {
-    //                         float angle = Mathf.PI * 2 * j / points;
-    //                         float x = newVertex.x + shape.radius * Mathf.Cos(angle);
-    //                         float y = newVertex.y + shape.radius * Mathf.Sin(angle);
-
-    //                         Vector3 newPoint = new Vector3(x, y, transform.position.z);
-    //                         Vector3 vectorToPoint = newPoint - newVertex;
-
-    //                         Gizmos.color = Color.green;
-    //                         Gizmos.DrawRay(newVertex, vectorToPoint);
-
-    //                         if (Vector3.Dot(direction, vectorToPoint) <= 0)
-    //                         {
-    //                             Gizmos.color = Color.red;
-    //                             Gizmos.DrawSphere(newPoint, 0.02f);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
