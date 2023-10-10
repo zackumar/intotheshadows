@@ -177,7 +177,7 @@ SpriteRenderer:
   m_SortingLayerID: 2063528405
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -331811101, guid: 59255ecf6756546898388bdc660fc879, type: 3}
+  m_Sprite: {fileID: 3713219614965599903, guid: e83e9691334414cabbd387adfb256a72, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -307,6 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdcc110a9b7db43f19e1829ec1b29ad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shadow: {fileID: 0}
   lights: []
   layerToIgnore:
     serializedVersion: 2
@@ -344,4 +345,3 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  castPoints: []

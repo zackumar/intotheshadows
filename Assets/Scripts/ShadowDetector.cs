@@ -8,7 +8,9 @@ using UnityEngine.Rendering.Universal;
 public class ShadowDetector : MonoBehaviour
 {
 
+
     public List<Light2D> lights;
+
     public LayerMask layerToIgnore;
     public Collider2D shadowCollider;
     public int points = 10;
@@ -33,38 +35,45 @@ public class ShadowDetector : MonoBehaviour
 
     private void Update()
     {
-        // if (shapeHash != shadowCollider.GetShapeHash())
-        // {
-        shapeHash = shadowCollider.GetShapeHash();
-        shadowCollider.GetShapes(physicsShapeGroup2D);
-        // }
 
-        inShadow = false;
-
-        foreach (Light2D light in lights)
+        if (transform.hasChanged)
         {
-            if (InShadow(light))
+            shadowCollider.GetShapes(physicsShapeGroup2D);
+
+            inShadow = false;
+            Light2D closest = lights[0];
+            float closestDistance = Vector3.Distance(lights[0].transform.position, transform.position);
+
+            foreach (Light2D light in lights)
+            {
+                float dist = Vector3.Distance(light.transform.position, transform.position);
+                if (dist < closestDistance)
+                {
+                    closestDistance = dist;
+                    closest = light;
+                }
+            }
+
+            if (InShadow(closest))
             {
                 inShadow = true;
-                break;
             }
-        }
 
-        if (inShadow != prevState)
-        {
-            if (inShadow)
+            if (inShadow != prevState)
             {
-                onEvent.Invoke();
-                Debug.Log("In shadow");
+                if (inShadow)
+                {
+                    onEvent.Invoke();
+                }
+                else
+                {
+                    offEvent.Invoke();
+                }
             }
-            else
-            {
-                offEvent.Invoke();
-                Debug.Log("Out shadow");
-            }
-        }
 
-        prevState = inShadow;
+            prevState = inShadow;
+            transform.hasChanged = false;
+        }
     }
 
     private List<Vector3> castPoints = new List<Vector3>();
@@ -135,7 +144,6 @@ public class ShadowDetector : MonoBehaviour
         {
             Gizmos.DrawSphere(p, 0.02f);
         }
-
 
     }
 

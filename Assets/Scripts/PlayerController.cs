@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Movement movement;
 
+    public Inventory inventory;
+
+    public Item itemInHand;
+
     private List<Collider2D> collidersInTrigger = new List<Collider2D>();
 
 
@@ -27,6 +31,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryInteract();
+        }
+
+        if (itemInHand)
+        {
+            UIHandler.SetCursor(itemInHand.ItemSprite.texture);
         }
     }
 
