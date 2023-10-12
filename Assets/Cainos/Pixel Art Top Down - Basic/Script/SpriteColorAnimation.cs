@@ -23,7 +23,7 @@ namespace Cainos.PixelArtTopDown_Basic
         {
             if (sr)
             {
-                timer += Time.deltaTime;
+                timer += Time.unscaledDeltaTime;
                 if (timer > time) timer = 0.0f;
 
                 sr.color = gradient.Evaluate(timer / time);

@@ -20,4 +20,9 @@ MonoBehaviour:
   BuyPrice: -1
   VisualPrefab: {fileID: 0}
   PlayerAnimatorTriggerUse: 
-  UseSound: []
+  UseSound:
+  - name: Cloak Sound
+    clip: {fileID: 8300000, guid: e01f7a36015a44903b2279032c452333, type: 3}
+    volume: 0.043
+    pitch: 1
+    loop: 0

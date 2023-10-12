@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+
     public float speed = 5.0f;
     private Vector2 moveVelocity;
     private Animator animator;
@@ -58,7 +60,9 @@ public class PlayerController : MonoBehaviour
     {
         foreach (Collider2D collider in collidersInTrigger)
         {
+            print(collider);
             collider.GetComponent<IInteractable>()?.Interact();
+
         }
 
     }

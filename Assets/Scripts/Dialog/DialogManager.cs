@@ -29,10 +29,10 @@ public class DialogManager : MonoBehaviour
 
     public void Update()
     {
-        Debug.Log(container.name);
-        if (sentences.Length > 0 && Input.anyKeyDown)
+
+        if (sentences.Length > 0 && textDisplay.text == sentences[index] && Input.anyKeyDown)
         {
-            StopCoroutine(typingCoroutine);
+            // StopCoroutine(typingCoroutine);
 
             if (index < sentences.Length - 1)
             {
@@ -51,6 +51,7 @@ public class DialogManager : MonoBehaviour
     {
         Time.timeScale = 0;
         container.SetActive(true);
+        print("Show");
     }
 
     public void HideDialog()
@@ -70,6 +71,7 @@ public class DialogManager : MonoBehaviour
 
         Instance.textDisplay.text = "";
         Instance.typingCoroutine = Instance.StartCoroutine(Instance.Type(Instance.sentences[Instance.index]));
+        print(Instance.typingCoroutine);
     }
 
     IEnumerator Type(string sentence)

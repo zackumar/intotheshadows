@@ -1,8 +1,10 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Movement : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private Animator animator;
 
     void Start()
@@ -17,6 +19,23 @@ public class Movement : MonoBehaviour
         animator.SetFloat("DirX", moveVelocity.x);
         rb.MovePosition(rb.position + moveVelocity * Time.fixedDeltaTime);
     }
+
+    public void SetVelocity(Vector2 vel)
+    {
+        animator.SetFloat("Speed", vel.sqrMagnitude);
+        animator.SetFloat("DirX", vel.x);
+        rb.velocity = vel;
+    }
+
+    public void MoveTowards(Vector3 position, float speed)
+    {
+        Vector3 vel = Vector3.MoveTowards(transform.position, position, speed * Time.fixedDeltaTime);
+        Vector3 direction = (position - transform.position).normalized;
+        animator.SetFloat("Speed", direction.sqrMagnitude);
+        animator.SetFloat("DirX", direction.x);
+        rb.MovePosition(vel);
+    }
+
 
     public static void LookAt(Transform currTransform, Transform target)
     {

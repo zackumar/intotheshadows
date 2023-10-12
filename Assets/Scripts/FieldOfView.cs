@@ -8,13 +8,13 @@ public class FieldOfView : MonoBehaviour
     public float viewRadius;
     [Range(0, 360)]
     public float viewAngle;
-    [Range(0, 360)]
+
+
     public float viewOffset;
 
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    [HideInInspector]
     public List<Transform> visibleTargets = new List<Transform>();
 
     public float meshResolution;
@@ -22,6 +22,7 @@ public class FieldOfView : MonoBehaviour
     public float edgeDstThreshold;
 
     public MeshFilter viewMeshFilter;
+    private Movement movement;
     Mesh viewMesh;
 
     void Start()
@@ -29,6 +30,8 @@ public class FieldOfView : MonoBehaviour
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;
+
+        movement = GetComponent<Movement>();
 
         StartCoroutine("FindTargetsWithDelay", .2f);
     }
@@ -43,6 +46,8 @@ public class FieldOfView : MonoBehaviour
         }
     }
 
+
+
     void LateUpdate()
     {
         DrawFieldOfView();
@@ -55,11 +60,24 @@ public class FieldOfView : MonoBehaviour
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
+
             Transform target = targetsInViewRadius[i].transform;
             Vector3 dirToTarget = (target.position - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            float angleDeg = Mathf.Atan2(dirToTarget.y, dirToTarget.x) * Mathf.Rad2Deg;
+            if (angleDeg < 0)
             {
+                angleDeg += 360f;
+            }
+
+            angleDeg = 360f - angleDeg;
+            print(angleDeg);
+
+            print(viewOffset - viewAngle / 2 + " , " + viewOffset + viewAngle / 2 + "|" + Vector3.Angle(transform.up, dirToTarget) + 90);
+            if (Vector3.Angle(transform.up, dirToTarget) + 90 > viewOffset + 90 - viewAngle / 2 && Vector3.Angle(transform.up, dirToTarget) + 90 < viewOffset + 90 + viewAngle / 2)
+            {
+                print("In");
                 float dstToTarget = Vector3.Distance(transform.position, target.position);
+                print(!Physics2D.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask));
                 if (!Physics2D.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target);
@@ -173,8 +191,7 @@ public class FieldOfView : MonoBehaviour
 
     public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
-
-        angleInDegrees += viewOffset;
+        angleInDegrees += 90 + viewOffset;
         if (!angleIsGlobal)
         {
             angleInDegrees += transform.eulerAngles.y;
